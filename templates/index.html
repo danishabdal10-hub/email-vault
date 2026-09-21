@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Email Vault</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <main class="container">
+    <h1>Email Vault</h1>
+    <p>Submit an email address.</p>
+
+    <form method="POST">
+      <input type="email" name="email" placeholder="you@example.com" required>
+      <button type="submit">Save email</button>
+    </form>
+
+    <h2>Submitted emails</h2>
+
+    <ul>
+      {% for email in emails %}
+        <li>{{ email }}</li>
+      {% else %}
+        <li>No emails submitted yet.</li>
+      {% endfor %}
+    </ul>
+  </main>
+</body>
+</html>
