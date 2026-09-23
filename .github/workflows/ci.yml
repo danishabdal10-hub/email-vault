@@ -1,4 +1,4 @@
-name: Email Vault CI
+name: Email Vault CI/CD
 
 on:
   push:
@@ -9,27 +9,19 @@ on:
 permissions:
   contents: read
 
+env:
+  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/email-vault
+
 jobs:
   test:
     runs-on: ubuntu-latest
-    services:
-      mongo:
-        image: mongo:6.0
-        ports:
-          - 27017:27017
-        # optional: wait for MongoDB to be ready
-        options: >-
-          --health-cmd="mongosh --eval 'db.adminCommand({ ping: 1 })'"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
 
     steps:
       - name: Get project code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -42,5 +34,29 @@ jobs:
       - name: Run tests
         run: pytest
 
-      - name: Build Docker image
-        run: docker build -t email-vault:${{ github.sha }} .
+      - name: Check Docker image can build
+        run: docker build -t email-vault:test .
+
+  publish:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get project code
+        uses: actions/checkout@v7
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and publish image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
