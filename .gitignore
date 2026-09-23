@@ -10,3 +10,4 @@ instance/
 
 # VS Code local settings
 .vscode/
+.pytest_cache/

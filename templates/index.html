@@ -13,16 +13,19 @@
       <input type="email" name="email" placeholder="you@example.com" required>
       <button type="submit">Save email</button>
     </form>
+     <h2>Submitted emails</h2>
 
-    <h2>Submitted emails</h2>
+      {% if message %} 
+        <p class="message">{{ message }}</p>
+        {% endif %}
 
-    <ul>
-      {% for email in emails %}
-        <li>{{ email }}</li>
-      {% else %}
-        <li>No emails submitted yet.</li>
-      {% endfor %}
-    </ul>
+        <ul>
+           {% for item in emails %}
+            <li>{{ item.email }}</li>
+        {% else %}
+         <li>No emails submitted yet.</li>
+         {% endfor %}
+      </ul>
   </main>
 </body>
 </html>
