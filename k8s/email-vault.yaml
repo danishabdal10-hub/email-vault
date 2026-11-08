@@ -14,13 +14,14 @@ spec:
     spec:
       containers:
         - name: email-vault
-          image: email-vault-app:latest
-          imagePullPolicy: IfNotPresent
+          image: danishabdal/email-vault:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 5000
-              envFrom:
-               - configMapRef:
-                   name: email-vault-config
+          envFrom:
+            - configMapRef:
+                name: email-vault-config
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -32,3 +33,4 @@ spec:
   ports:
     - port: 5000
       targetPort: 5000
+      nodePort: 30080
