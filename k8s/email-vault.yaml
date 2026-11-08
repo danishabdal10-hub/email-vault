@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-vault
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: email-vault
+  template:
+    metadata:
+      labels:
+        app: email-vault
+    spec:
+      containers:
+        - name: email-vault
+          image: email-vault-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+              envFrom:
+               - configMapRef:
+                   name: email-vault-config
+apiVersion: v1
+kind: Service
+metadata:
+  name: email-vault
+spec:
+  type: NodePort
+  selector:
+    app: email-vault
+  ports:
+    - port: 5000
+      targetPort: 5000
